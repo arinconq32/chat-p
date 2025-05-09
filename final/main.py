@@ -1,32 +1,31 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 import faiss
 import unicodedata
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
-import joblib
 import os
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
 # Configurar CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost/wordpress/"],  # Cambiar esto a tu dominio específico en producción
+    allow_origins=["*"],  # Puedes cambiar esto a tu dominio exacto en producción
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 # Normalizador
-def normalizar(texto):
+def normalizar(texto: str) -> str:
     texto = texto.lower().strip()
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto)
                     if unicodedata.category(c) != 'Mn')
     return texto
 
-# FAQ
+# Base de FAQs
 faq_raw = {
     "¿cuánto cuesta el envío?|¿cuál es el valor del envío?|precio del envío": "El envío cuesta $10.000 a todo el país.",
     "¿tienen devoluciones?|¿puedo devolver un producto?|¿cómo funciona la devolución?": "Sí, puedes devolver productos dentro de los 7 días.",
@@ -40,45 +39,36 @@ faq_raw = {
     "¿tienen planificadores kawaii?": "- Planificador semanal kawaii: $7.000\n- Planificador diario con diseño de unicornio: $6.500\n- Planificador de bolsillo con ilustraciones: $5.500"
 }
 
-# Inicialización retrasada para optimizar recursos
+# Variables globales
 modelo = None
 index = None
 preguntas_originales = []
 respuestas = []
 
+# Inicializar modelo y FAISS
 def inicializar_modelo():
     global modelo, index, preguntas_originales, respuestas
-    
-    # Si ya está inicializado, no hacer nada
-    if modelo is not None:
+
+    if modelo is not None and index is not None:
         return
-    
-    # Vectorización
+
     preguntas = []
     respuestas.clear()
     for grupo, respuesta in faq_raw.items():
         for pregunta in grupo.split("|"):
             preguntas.append(normalizar(pregunta))
             respuestas.append(respuesta)
-    
-    preguntas_originales = preguntas.copy()
-    
-    print("Inicializando vectorizador TF-IDF...")
-    # Usamos TF-IDF que es mucho más ligero que los modelos de transformers
+
+    preguntas_originales[:] = preguntas
+
     modelo = TfidfVectorizer(ngram_range=(1, 2), min_df=1, max_df=0.9)
-    
-    print("Codificando preguntas...")
-    # Convertimos la matriz dispersa a densa para FAISS
     vectores = modelo.fit_transform(preguntas).toarray().astype(np.float32)
     dimension = vectores.shape[1]
-    
-    print("Creando índice FAISS...")
-    global index
+
     index = faiss.IndexFlatL2(dimension)
     index.add(vectores)
-    print("Sistema inicializado correctamente")
 
-# Input del usuario
+# Modelo de entrada
 class Pregunta(BaseModel):
     texto: str
 
@@ -88,17 +78,14 @@ def root():
 
 @app.post("/chat")
 def responder_pregunta(pregunta: Pregunta):
-    # Inicializar el modelo bajo demanda
     inicializar_modelo()
-    
+
     pregunta_norm = normalizar(pregunta.texto)
-    # Transformamos con el vectorizador TF-IDF
     vector_pregunta = modelo.transform([pregunta_norm]).toarray().astype(np.float32)
     distancias, indices = index.search(vector_pregunta, k=3)
-    
+
     mejor_distancia = distancias[0][0]
-    # Ajustamos el umbral para TF-IDF que tiene una escala diferente
-    if mejor_distancia < 1.2:  
+    if mejor_distancia < 1.2:
         return {"respuesta": respuestas[indices[0][0]]}
     else:
         sugerencias = [preguntas_originales[i] for i in indices[0]]
@@ -107,7 +94,7 @@ def responder_pregunta(pregunta: Pregunta):
             "sugerencias": sugerencias
         }
 
-# Inicializar el modelo al arranque si hay suficiente memoria
+# Inicializar si se configura por entorno
 if os.environ.get("INICIAR_MODELO_AL_ARRANQUE", "false").lower() == "true":
     try:
         inicializar_modelo()
