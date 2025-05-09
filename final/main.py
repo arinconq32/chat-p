@@ -6,6 +6,7 @@ import unicodedata
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 import os
+from collections import defaultdict
 
 app = FastAPI()
 
@@ -45,10 +46,11 @@ index = None
 preguntas_originales = []
 respuestas = []
 grupos_faq = []
+palabras_clave_faq = defaultdict(list)
 
 # Inicializar modelo y FAISS
 def inicializar_modelo():
-    global modelo, index, preguntas_originales, respuestas, grupos_faq
+    global modelo, index, preguntas_originales, respuestas, grupos_faq, palabras_clave_faq
 
     if modelo is not None and index is not None:
         return
@@ -56,6 +58,15 @@ def inicializar_modelo():
     preguntas = []
     respuestas.clear()
     grupos_faq.clear()
+    palabras_clave_faq.clear()
+
+    # Palabras clave importantes para cada categoría
+    palabras_clave_categorias = {
+        "envío": ["envío", "envio", "precio", "cuesta", "valor", "costo"],
+        "devoluciones": ["devolver", "devolución", "cambio", "retorno"],
+        "pagos": ["pago", "métodos", "tarjeta", "transferencia", "contraentrega"],
+        "productos": ["cuaderno", "libreta", "bolígrafo", "lápiz", "accesorio", "sticker", "washi tape", "agenda", "planificador"]
+    }
 
     for grupo, respuesta in faq_raw.items():
         grupo_splitted = grupo.split("|")
@@ -63,6 +74,11 @@ def inicializar_modelo():
             preguntas.append(normalizar(pregunta))
             respuestas.append(respuesta)
             grupos_faq.append(grupo_splitted[0])  # Usamos la primera pregunta como sugerencia
+            
+            # Mapear palabras clave a preguntas
+            for categoria, palabras in palabras_clave_categorias.items():
+                if any(palabra in normalizar(pregunta) for palabra in palabras):
+                    palabras_clave_faq[categoria].append(grupo_splitted[0])
 
     preguntas_originales[:] = preguntas
 
@@ -88,7 +104,7 @@ def responder_pregunta(pregunta: Pregunta):
     texto = pregunta.texto.strip().lower()
     if len(texto) < 4 or texto in ["hola", "hi", "saludos", "hey"]:
         return {
-            "respuesta": "¡Hola! ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre nuestros productos kawaii, envíos, devoluciones y más."
+            "respuesta": "¡Hola! ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre nuestros productos kawaii, envíos, métodos de pago o devoluciones."
         }
 
     pregunta_norm = normalizar(pregunta.texto)
@@ -101,29 +117,49 @@ def responder_pregunta(pregunta: Pregunta):
     if mejor_distancia < 0.7:
         return {"respuesta": respuestas[mejor_indice]}
     else:
-        # Buscar temas sugeridos relacionados
-        palabras_clave = ["envío", "envio", "producto", "precio", "kawaii", "pago", "devolver", "devolución", "compra", "planificador", "agenda", "stickers", "accesorios"]
-        temas_relacionados = []
+        # Buscar temas sugeridos basados en palabras clave
+        temas_sugeridos = set()
+        
+        # Palabras clave importantes
+        palabras_clave = {
+            "envío": ["envío", "envio", "precio", "cuesta", "valor", "costo"],
+            "devoluciones": ["devolver", "devolución", "cambio", "retorno"],
+            "pagos": ["pago", "métodos", "tarjeta", "transferencia", "contraentrega"],
+            "productos": ["cuaderno", "libreta", "bolígrafo", "lápiz", "accesorio", "sticker", "washi tape", "agenda", "planificador"]
+        }
 
-        # Buscar en las preguntas para encontrar posibles coincidencias con palabras clave
-        for i, pregunta in enumerate(preguntas_originales):
-            if any(palabra in pregunta_norm for palabra in palabras_clave):  # Compara si hay coincidencia con las palabras clave
-                tema = grupos_faq[i]  # Obtiene el tema asociado
-                if tema not in temas_relacionados:  # Evita duplicados
-                    temas_relacionados.append(tema)
+        # Verificar qué palabras clave están presentes en la pregunta
+        palabras_presentes = []
+        for categoria, palabras in palabras_clave.items():
+            for palabra in palabras:
+                if palabra in pregunta_norm:
+                    palabras_presentes.append(categoria)
+                    break  # Solo necesitamos una palabra por categoría
 
-        # Si se encuentran temas relacionados, se devuelve la sugerencia
-        if temas_relacionados:
-            sugerencias = []
-            for tema in temas_relacionados:
-                sugerencias.append(f"¿Quizás te refieras a: {tema}?")
+        # Obtener sugerencias basadas en las palabras clave encontradas
+        sugerencias = []
+        for categoria in set(palabras_presentes):  # Eliminar duplicados
+            if categoria in palabras_clave_faq:
+                for pregunta_relacionada in palabras_clave_faq[categoria]:
+                    if pregunta_relacionada not in sugerencias:
+                        sugerencias.append(pregunta_relacionada)
+
+        # Si encontramos sugerencias, las mostramos
+        if sugerencias:
             return {
-                "respuesta": "No encontré una coincidencia exacta, pero estos temas pueden interesarte:",
-                "sugerencias": sugerencias
+                "respuesta": "No encontré una coincidencia exacta, pero quizás te interese:",
+                "sugerencias": sugerencias[:3]  # Limitar a 3 sugerencias
             }
         else:
+            # Sugerencias generales si no se encontraron palabras clave
+            sugerencias_generales = [
+                "¿Quieres saber sobre el precio de envío?",
+                "¿Necesitas información sobre cómo devolver un producto?",
+                "¿Te interesan nuestros productos kawaii como cuadernos o accesorios?"
+            ]
             return {
-                "respuesta": "Lo siento, no entiendo tu pregunta. ¿Podrías reformularla o preguntar sobre nuestros productos kawaii, envíos, métodos de pago o devoluciones?"
+                "respuesta": "No pude entender tu pregunta. Aquí tienes algunas opciones:",
+                "sugerencias": sugerencias_generales
             }
 
 # Inicializar si se configura por entorno
