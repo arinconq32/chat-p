@@ -29,7 +29,7 @@ def normalizar(texto: str) -> str:
 # Base de FAQs
 faq_raw = {
     "¿cuánto cuesta el envío?|¿cuál es el valor del envío?|precio del envío": "El envío cuesta $10.000 a todo el país.",
-    "¿tienen devoluciones?|¿puedo devolver un producto?|¿cómo funciona la devolución?": "Sí, puedes devolver productos dentro de los 7 días.",
+    "¿tienen devoluciones?|¿puedo devolver un producto?|¿cómo funciona la devolución?": "Sí, puedes devolver productos dentro de los 5 días.",
     "¿cuáles son los métodos de pago?|¿cómo puedo pagar?|formas de pago disponibles": "Aceptamos tarjetas, transferencias y pagos contraentrega.",
     "¿tienen cuadernos o libretas kawaii?": "- Cuaderno kawaii de tapa dura: $9.000\n- Libreta mini con forma de gatito: $6.000\n- Planificador semanal kawaii: $7.000",
     "¿qué bolígrafos o lápices kawaii tienen?": "- Bolígrafo gel con diseño de helado: $3.500\n- Lápiz con pompón o diseño cute: $2.500\n- Marcador doble punta pastel (unidad): $2.800",
@@ -37,7 +37,8 @@ faq_raw = {
     "¿tienen stickers o washi tape kawaii?": "- Pegatinas decorativas (hoja): $2.000\n- Stickers 3D kawaii (set): $4.500\n- Washi tape decorativo (rollo): $3.000",
     "¿cuáles son los productos más vendidos?": "- Cuaderno kawaii de tapa dura: $9.000\n- Estuche con diseño de animalitos: $15.000\n- Bolígrafo gel con diseño de helado: $3.500\n- Stickers 3D kawaii (set): $4.500\n- Planificador semanal kawaii: $7.000",
     "¿tienen agendas kawaii?": "- Planificador mensual kawaii: $8.000\n- Agenda 2025 con diseño de gatitos: $10.000\n- Agenda con separadores y stickers: $9.500",
-    "¿tienen planificadores kawaii?": "- Planificador semanal kawaii: $7.000\n- Planificador diario con diseño de unicornio: $6.500\n- Planificador de bolsillo con ilustraciones: $5.500"
+    "¿tienen planificadores kawaii?": "- Planificador semanal kawaii: $7.000\n- Planificador diario con diseño de unicornio: $6.500\n- Planificador de bolsillo con ilustraciones: $5.500",
+    "gracias": "- Un placer atenderte, no dudes en escribirnos para resolver tus dudas. También contamos con whatsapp y formulario de contácto."
 }
 
 # Variables globales
@@ -67,7 +68,8 @@ def inicializar_modelo():
         "pagos": ["pago", "métodos", "tarjeta", "transferencia", "contraentrega", "pagar"],
         "kawaii": ["kawaii", "kawali", "cawai", "lindo", "cute", "tierno", "adorable"],
         "productos": ["cuaderno", "libreta", "bolígrafo", "lápiz", "accesorio", 
-                     "sticker", "washi tape", "agenda", "planificador", "producto"]
+                     "sticker", "washi tape", "agenda", "planificador", "producto"],
+        "chao": ["gracias", "adiós", "adios", "bye"]
     }
 
     for grupo, respuesta in faq_raw.items():
