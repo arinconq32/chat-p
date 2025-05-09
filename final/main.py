@@ -69,7 +69,7 @@ def inicializar_modelo():
         "kawaii": ["kawaii", "kawali", "cawai", "lindo", "cute", "tierno", "adorable"],
         "productos": ["cuaderno", "libreta", "bolígrafo", "lápiz", "accesorio", 
                      "sticker", "washi tape", "agenda", "planificador", "producto"],
-        "chao": ["gracias", "adiós", "adios", "bye"]
+        "terminar": ["gracias", "chao", "adiós", "adios", "bye"]
     }
 
     for grupo, respuesta in faq_raw.items():
@@ -128,7 +128,7 @@ def responder_pregunta(pregunta: Pregunta):
             "kawaii": ["kawaii", "kawali", "cawai", "lindo", "cute", "tierno", "adorable"],
             "productos": ["cuaderno", "libreta", "bolígrafo", "lápiz", "accesorio", 
                          "sticker", "washi tape", "agenda", "planificador", "producto"],
-             "chao": ["gracias", "adiós", "adios", "bye"]
+             "terminar": ["gracias", "chao","adiós", "adios", "bye"]
         }
 
         sugerencias = []
@@ -153,7 +153,8 @@ def responder_pregunta(pregunta: Pregunta):
             sugerencias_generales = [
                 "¿Quieres saber sobre el precio de envío?",
                 "¿Necesitas información sobre cómo devolver un producto?",
-                "¿Buscas nuestros productos kawaii como cuadernos o accesorios?"
+                "¿Buscas nuestros productos kawaii como cuadernos o accesorios?",
+                "¿Deseas terminar la conversacion?"
             ]
             return {
                 "respuesta": "No pude entender tu pregunta. Aquí tienes algunas opciones:",
