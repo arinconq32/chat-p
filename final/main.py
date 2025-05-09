@@ -6,9 +6,19 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 import joblib
 import os
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+# Configurar CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost/wordpress/"],  # Cambiar esto a tu dominio específico en producción
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # Normalizador
 def normalizar(texto):
     texto = texto.lower().strip()
