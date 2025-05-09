@@ -38,7 +38,7 @@ faq_raw = {
     "¿cuáles son los productos más vendidos?": "- Cuaderno kawaii de tapa dura: $9.000\n- Estuche con diseño de animalitos: $15.000\n- Bolígrafo gel con diseño de helado: $3.500\n- Stickers 3D kawaii (set): $4.500\n- Planificador semanal kawaii: $7.000",
     "¿tienen agendas kawaii?": "- Planificador mensual kawaii: $8.000\n- Agenda 2025 con diseño de gatitos: $10.000\n- Agenda con separadores y stickers: $9.500",
     "¿tienen planificadores kawaii?": "- Planificador semanal kawaii: $7.000\n- Planificador diario con diseño de unicornio: $6.500\n- Planificador de bolsillo con ilustraciones: $5.500",
-    "gracias": "- Un placer atenderte, no dudes en escribirnos para resolver tus dudas. También contamos con whatsapp y formulario de contácto."
+    "gracias": "Un placer atenderte, no dudes en escribirnos para resolver tus dudas. También contamos con whatsapp y formulario de contácto."
 }
 
 # Variables globales
@@ -127,7 +127,8 @@ def responder_pregunta(pregunta: Pregunta):
             "pagos": ["pago", "métodos", "tarjeta", "transferencia", "contraentrega", "pagar"],
             "kawaii": ["kawaii", "kawali", "cawai", "lindo", "cute", "tierno", "adorable"],
             "productos": ["cuaderno", "libreta", "bolígrafo", "lápiz", "accesorio", 
-                         "sticker", "washi tape", "agenda", "planificador", "producto"]
+                         "sticker", "washi tape", "agenda", "planificador", "producto"],
+             "chao": ["gracias", "adiós", "adios", "bye"]
         }
 
         sugerencias = []
