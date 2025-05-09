@@ -116,6 +116,7 @@ def responder_pregunta(pregunta: Pregunta):
             sugerencias = []
             for tema in temas_relacionados:
                 sugerencias.append(f"¿Quizás te refieras a: {tema}?")
+
             return {
                 "respuesta": "No encontré una coincidencia exacta, pero estos temas pueden interesarte:",
                 "sugerencias": sugerencias
