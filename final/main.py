@@ -107,14 +107,18 @@ def responder_pregunta(pregunta: Pregunta):
 
         for i, grupo in enumerate(grupos_faq):
             grupo_norm = normalizar(grupo)
-            if any(palabra in pregunta_norm for palabra in palabras_clave) and any(p in grupo_norm for p in pregunta_norm.split()):
-                if grupo not in temas_relacionados:
+            if any(palabra in pregunta_norm for palabra in palabras_clave):  # Compara si hay coincidencia con las palabras clave
+                if grupo not in temas_relacionados:  # Evita duplicados
                     temas_relacionados.append(grupo)
 
+        # Si se encuentran temas relacionados, se devuelve la sugerencia
         if temas_relacionados:
+            sugerencias = []
+            for tema in temas_relacionados:
+                sugerencias.append(f"¿Quizás te refieras a: {tema}?")
             return {
-                "respuesta": "No estoy seguro exactamente de lo que preguntas. ¿Quizás te refieres a alguno de estos temas?",
-                "sugerencias": temas_relacionados
+                "respuesta": "No encontré una coincidencia exacta, pero estos temas pueden interesarte:",
+                "sugerencias": sugerencias
             }
         else:
             return {
