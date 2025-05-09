@@ -3,7 +3,9 @@ from pydantic import BaseModel
 import faiss
 import unicodedata
 import numpy as np
-from sentence_transformers import SentenceTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
+import joblib
+import os
 
 app = FastAPI()
 
@@ -28,37 +30,65 @@ faq_raw = {
     "¿tienen planificadores kawaii?": "- Planificador semanal kawaii: $7.000\n- Planificador diario con diseño de unicornio: $6.500\n- Planificador de bolsillo con ilustraciones: $5.500"
 }
 
-# Vectorización
-preguntas = []
+# Inicialización retrasada para optimizar recursos
+modelo = None
+index = None
+preguntas_originales = []
 respuestas = []
 
-for grupo, respuesta in faq_raw.items():
-    for pregunta in grupo.split("|"):
-        preguntas.append(normalizar(pregunta))
-        respuestas.append(respuesta)
-
-preguntas_originales = preguntas.copy()
-
-modelo = SentenceTransformer("all-MiniLM-L6-v2")
-vectores = modelo.encode(preguntas, convert_to_numpy=True)
-
-dimension = vectores.shape[1]
-index = faiss.IndexFlatL2(dimension)
-index.add(vectores)
+def inicializar_modelo():
+    global modelo, index, preguntas_originales, respuestas
+    
+    # Si ya está inicializado, no hacer nada
+    if modelo is not None:
+        return
+    
+    # Vectorización
+    preguntas = []
+    respuestas.clear()
+    for grupo, respuesta in faq_raw.items():
+        for pregunta in grupo.split("|"):
+            preguntas.append(normalizar(pregunta))
+            respuestas.append(respuesta)
+    
+    preguntas_originales = preguntas.copy()
+    
+    print("Inicializando vectorizador TF-IDF...")
+    # Usamos TF-IDF que es mucho más ligero que los modelos de transformers
+    modelo = TfidfVectorizer(ngram_range=(1, 2), min_df=1, max_df=0.9)
+    
+    print("Codificando preguntas...")
+    # Convertimos la matriz dispersa a densa para FAISS
+    vectores = modelo.fit_transform(preguntas).toarray().astype(np.float32)
+    dimension = vectores.shape[1]
+    
+    print("Creando índice FAISS...")
+    global index
+    index = faiss.IndexFlatL2(dimension)
+    index.add(vectores)
+    print("Sistema inicializado correctamente")
 
 # Input del usuario
 class Pregunta(BaseModel):
     texto: str
 
+@app.get("/")
+def root():
+    return {"mensaje": "API de FAQs funcionando correctamente. Usa /chat para hacer preguntas."}
+
 @app.post("/chat")
 def responder_pregunta(pregunta: Pregunta):
+    # Inicializar el modelo bajo demanda
+    inicializar_modelo()
+    
     pregunta_norm = normalizar(pregunta.texto)
-    vector_pregunta = modelo.encode([pregunta_norm], convert_to_numpy=True)
-
+    # Transformamos con el vectorizador TF-IDF
+    vector_pregunta = modelo.transform([pregunta_norm]).toarray().astype(np.float32)
     distancias, indices = index.search(vector_pregunta, k=3)
+    
     mejor_distancia = distancias[0][0]
-
-    if mejor_distancia < 0.5:
+    # Ajustamos el umbral para TF-IDF que tiene una escala diferente
+    if mejor_distancia < 1.2:  
         return {"respuesta": respuestas[indices[0][0]]}
     else:
         sugerencias = [preguntas_originales[i] for i in indices[0]]
@@ -66,3 +96,10 @@ def responder_pregunta(pregunta: Pregunta):
             "respuesta": "Lo siento, no tengo una respuesta clara para eso.",
             "sugerencias": sugerencias
         }
+
+# Inicializar el modelo al arranque si hay suficiente memoria
+if os.environ.get("INICIAR_MODELO_AL_ARRANQUE", "false").lower() == "true":
+    try:
+        inicializar_modelo()
+    except Exception as e:
+        print(f"No se pudo inicializar el modelo al arranque: {e}")
