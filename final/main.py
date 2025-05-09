@@ -9,10 +9,10 @@ import os
 
 app = FastAPI()
 
-# Configurar CORS
+# Configurar CORS - Modificado para aceptar cualquier origen
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost"],  # Puedes cambiar esto a tu dominio exacto en producción
+    allow_origins=["*"],  # Permitir cualquier origen para que funcione con tu WordPress
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -79,20 +79,35 @@ def root():
 @app.post("/chat")
 def responder_pregunta(pregunta: Pregunta):
     inicializar_modelo()
+    
+    # Verifica si el texto es demasiado corto o un simple saludo
+    texto = pregunta.texto.strip().lower()
+    if len(texto) < 4 or texto in ["hola", "hi", "saludos", "hey"]:
+        return {
+            "respuesta": "¡Hola! ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre nuestros productos kawaii, envíos, devoluciones y más."
+        }
 
     pregunta_norm = normalizar(pregunta.texto)
     vector_pregunta = modelo.transform([pregunta_norm]).toarray().astype(np.float32)
     distancias, indices = index.search(vector_pregunta, k=3)
 
+    # Umbral más estricto (0.7 en lugar de 1.2)
     mejor_distancia = distancias[0][0]
-    if mejor_distancia < 1.2:
+    if mejor_distancia < 0.7:
         return {"respuesta": respuestas[indices[0][0]]}
     else:
-        sugerencias = [preguntas_originales[i] for i in indices[0]]
-        return {
-            "respuesta": "Lo siento, no tengo una respuesta clara para eso.",
-            "sugerencias": sugerencias
-        }
+        # Verificar si hay algunas palabras clave para ofrecer sugerencias más relevantes
+        palabras_clave = ["envío", "envio", "producto", "precio", "kawaii", "pago", "devolver", "devolución", "compra"]
+        if any(palabra in pregunta_norm for palabra in palabras_clave):
+            sugerencias = [preguntas_originales[i] for i in indices[0]]
+            return {
+                "respuesta": "No estoy seguro exactamente de lo que preguntas. ¿Quizás te refieres a alguno de estos temas?",
+                "sugerencias": sugerencias
+            }
+        else:
+            return {
+                "respuesta": "Lo siento, no entiendo tu pregunta. ¿Podrías reformularla o preguntar sobre nuestros productos kawaii, envíos, métodos de pago o devoluciones?"
+            }
 
 # Inicializar si se configura por entorno
 if os.environ.get("INICIAR_MODELO_AL_ARRANQUE", "false").lower() == "true":
