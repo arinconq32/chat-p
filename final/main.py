@@ -23,7 +23,7 @@ app.add_middleware(
 def normalizar(texto: str) -> str:
     texto = texto.lower().strip()
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto)
-                    if unicodedata.category(c) != 'Mn')
+                   if unicodedata.category(c) != 'Mn')
     return texto
 
 # Base de FAQs
@@ -60,12 +60,14 @@ def inicializar_modelo():
     grupos_faq.clear()
     palabras_clave_faq.clear()
 
-    # Palabras clave importantes para cada categoría
+    # Palabras clave mejoradas
     palabras_clave_categorias = {
-        "envío": ["envío", "envio", "precio", "cuesta", "valor", "costo"],
-        "devoluciones": ["devolver", "devolución", "cambio", "retorno"],
-        "pagos": ["pago", "métodos", "tarjeta", "transferencia", "contraentrega"],
-        "productos": ["cuaderno", "libreta", "bolígrafo", "lápiz", "accesorio", "sticker", "washi tape", "agenda", "planificador"]
+        "envío": ["envío", "envio", "precio", "cuesta", "valor", "costo", "envios"],
+        "devoluciones": ["devolver", "devolución", "cambio", "retorno", "devolverlo"],
+        "pagos": ["pago", "métodos", "tarjeta", "transferencia", "contraentrega", "pagar"],
+        "kawaii": ["kawaii", "kawali", "cawai", "lindo", "cute", "tierno", "adorable"],
+        "productos": ["cuaderno", "libreta", "bolígrafo", "lápiz", "accesorio", 
+                     "sticker", "washi tape", "agenda", "planificador", "producto"]
     }
 
     for grupo, respuesta in faq_raw.items():
@@ -73,9 +75,8 @@ def inicializar_modelo():
         for pregunta in grupo_splitted:
             preguntas.append(normalizar(pregunta))
             respuestas.append(respuesta)
-            grupos_faq.append(grupo_splitted[0])  # Usamos la primera pregunta como sugerencia
+            grupos_faq.append(grupo_splitted[0])
             
-            # Mapear palabras clave a preguntas
             for categoria, palabras in palabras_clave_categorias.items():
                 if any(palabra in normalizar(pregunta) for palabra in palabras):
                     palabras_clave_faq[categoria].append(grupo_splitted[0])
@@ -117,54 +118,45 @@ def responder_pregunta(pregunta: Pregunta):
     if mejor_distancia < 0.7:
         return {"respuesta": respuestas[mejor_indice]}
     else:
-        # Buscar temas sugeridos basados en palabras clave
-        temas_sugeridos = set()
-        
-        # Palabras clave importantes
+        # Palabras clave mejoradas
         palabras_clave = {
-            "envío": ["envío", "envio", "precio", "cuesta", "valor", "costo"],
-            "devoluciones": ["devolver", "devolución", "cambio", "retorno"],
-            "pagos": ["pago", "métodos", "tarjeta", "transferencia", "contraentrega"],
-            "productos": ["cuaderno", "libreta", "bolígrafo", "lápiz", "accesorio", "sticker", "washi tape", "agenda", "planificador"]
+            "envío": ["envío", "envio", "precio", "cuesta", "valor", "costo", "envios"],
+            "devoluciones": ["devolver", "devolución", "cambio", "retorno", "devolverlo"],
+            "pagos": ["pago", "métodos", "tarjeta", "transferencia", "contraentrega", "pagar"],
+            "kawaii": ["kawaii", "kawali", "cawai", "lindo", "cute", "tierno", "adorable"],
+            "productos": ["cuaderno", "libreta", "bolígrafo", "lápiz", "accesorio", 
+                         "sticker", "washi tape", "agenda", "planificador", "producto"]
         }
 
-        # Verificar qué palabras clave están presentes en la pregunta
-        palabras_presentes = []
-        for categoria, palabras in palabras_clave.items():
-            for palabra in palabras:
-                if palabra in pregunta_norm:
-                    palabras_presentes.append(categoria)
-                    break  # Solo necesitamos una palabra por categoría
-
-        # Obtener sugerencias basadas en las palabras clave encontradas
         sugerencias = []
-        for categoria in set(palabras_presentes):  # Eliminar duplicados
-            if categoria in palabras_clave_faq:
-                for pregunta_relacionada in palabras_clave_faq[categoria]:
-                    if pregunta_relacionada not in sugerencias:
-                        sugerencias.append(pregunta_relacionada)
+        for categoria, palabras in palabras_clave.items():
+            if any(palabra in pregunta_norm for palabra in palabras):
+                for i, pregunta_bd in enumerate(preguntas_originales):
+                    if any(palabra in pregunta_bd for palabra in palabras):
+                        tema = grupos_faq[i]
+                        if tema not in sugerencias:
+                            sugerencias.append(tema)
+                            if len(sugerencias) >= 3:
+                                break
+                if len(sugerencias) >= 3:
+                    break
 
-        # Si encontramos sugerencias, las mostramos
         if sugerencias:
             return {
                 "respuesta": "No encontré una coincidencia exacta, pero quizás te interese:",
-                "sugerencias": sugerencias[:3]  # Limitar a 3 sugerencias
+                "sugerencias": sugerencias[:3]
             }
         else:
-            # Sugerencias generales si no se encontraron palabras clave
             sugerencias_generales = [
                 "¿Quieres saber sobre el precio de envío?",
                 "¿Necesitas información sobre cómo devolver un producto?",
-                "¿Te interesan nuestros productos kawaii como cuadernos o accesorios?"
+                "¿Buscas nuestros productos kawaii como cuadernos o accesorios?"
             ]
             return {
                 "respuesta": "No pude entender tu pregunta. Aquí tienes algunas opciones:",
                 "sugerencias": sugerencias_generales
             }
 
-# Inicializar si se configura por entorno
-if os.environ.get("INICIAR_MODELO_AL_ARRANQUE", "false").lower() == "true":
-    try:
-        inicializar_modelo()
-    except Exception as e:
-        print(f"No se pudo inicializar el modelo al arranque: {e}")
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
