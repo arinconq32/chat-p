@@ -9,10 +9,10 @@ import os
 
 app = FastAPI()
 
-# Configurar CORS - Modificado para aceptar cualquier origen
+# Configurar CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permitir cualquier origen para que funcione con tu WordPress
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,20 +44,25 @@ modelo = None
 index = None
 preguntas_originales = []
 respuestas = []
+grupos_faq = []
 
 # Inicializar modelo y FAISS
 def inicializar_modelo():
-    global modelo, index, preguntas_originales, respuestas
+    global modelo, index, preguntas_originales, respuestas, grupos_faq
 
     if modelo is not None and index is not None:
         return
 
     preguntas = []
     respuestas.clear()
+    grupos_faq.clear()
+
     for grupo, respuesta in faq_raw.items():
-        for pregunta in grupo.split("|"):
+        grupo_splitted = grupo.split("|")
+        for pregunta in grupo_splitted:
             preguntas.append(normalizar(pregunta))
             respuestas.append(respuesta)
+            grupos_faq.append(grupo_splitted[0])  # Usamos la primera pregunta como sugerencia
 
     preguntas_originales[:] = preguntas
 
@@ -80,7 +85,6 @@ def root():
 def responder_pregunta(pregunta: Pregunta):
     inicializar_modelo()
     
-    # Verifica si el texto es demasiado corto o un simple saludo
     texto = pregunta.texto.strip().lower()
     if len(texto) < 4 or texto in ["hola", "hi", "saludos", "hey"]:
         return {
@@ -91,18 +95,26 @@ def responder_pregunta(pregunta: Pregunta):
     vector_pregunta = modelo.transform([pregunta_norm]).toarray().astype(np.float32)
     distancias, indices = index.search(vector_pregunta, k=3)
 
-    # Umbral más estricto (0.7 en lugar de 1.2)
     mejor_distancia = distancias[0][0]
+    mejor_indice = indices[0][0]
+
     if mejor_distancia < 0.7:
-        return {"respuesta": respuestas[indices[0][0]]}
+        return {"respuesta": respuestas[mejor_indice]}
     else:
-        # Verificar si hay algunas palabras clave para ofrecer sugerencias más relevantes
-        palabras_clave = ["envío", "envio", "producto", "precio", "kawaii", "pago", "devolver", "devolución", "compra"]
-        if any(palabra in pregunta_norm for palabra in palabras_clave):
-            sugerencias = [preguntas_originales[i] for i in indices[0]]
+        # Buscar temas sugeridos relacionados
+        palabras_clave = ["envío", "envio", "producto", "precio", "kawaii", "pago", "devolver", "devolución", "compra", "planificador", "agenda", "stickers", "accesorios"]
+        temas_relacionados = []
+
+        for i, grupo in enumerate(grupos_faq):
+            grupo_norm = normalizar(grupo)
+            if any(palabra in pregunta_norm for palabra in palabras_clave) and any(p in grupo_norm for p in pregunta_norm.split()):
+                if grupo not in temas_relacionados:
+                    temas_relacionados.append(grupo)
+
+        if temas_relacionados:
             return {
                 "respuesta": "No estoy seguro exactamente de lo que preguntas. ¿Quizás te refieres a alguno de estos temas?",
-                "sugerencias": sugerencias
+                "sugerencias": temas_relacionados
             }
         else:
             return {
