@@ -105,19 +105,18 @@ def responder_pregunta(pregunta: Pregunta):
         palabras_clave = ["envío", "envio", "producto", "precio", "kawaii", "pago", "devolver", "devolución", "compra", "planificador", "agenda", "stickers", "accesorios"]
         temas_relacionados = []
 
-        for i, grupo in enumerate(grupos_faq):
-            grupo_norm = normalizar(grupo)
-            # Buscamos si alguna de las palabras clave está en la pregunta
-            if any(palabra in pregunta_norm for palabra in palabras_clave):  
-                if grupo not in temas_relacionados:  # Evita duplicados
-                    temas_relacionados.append(grupo)
+        # Buscar en las preguntas para encontrar posibles coincidencias con palabras clave
+        for i, pregunta in enumerate(preguntas_originales):
+            if any(palabra in pregunta_norm for palabra in palabras_clave):  # Compara si hay coincidencia con las palabras clave
+                tema = grupos_faq[i]  # Obtiene el tema asociado
+                if tema not in temas_relacionados:  # Evita duplicados
+                    temas_relacionados.append(tema)
 
         # Si se encuentran temas relacionados, se devuelve la sugerencia
         if temas_relacionados:
             sugerencias = []
             for tema in temas_relacionados:
                 sugerencias.append(f"¿Quizás te refieras a: {tema}?")
-
             return {
                 "respuesta": "No encontré una coincidencia exacta, pero estos temas pueden interesarte:",
                 "sugerencias": sugerencias
