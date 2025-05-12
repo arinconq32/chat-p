@@ -28,18 +28,100 @@ def normalizar(texto: str) -> str:
 
 # Base de FAQs
 faq_raw = {
-    "¿cuánto cuesta el envío?|¿cuál es el valor del envío?|precio del envío": "El envío cuesta $10.000 a todo el país.",
+    "¿cuánto cuesta el envío?|¿cuál es el valor del envío?|precio del envío": "En principio, el valor del envío depende de la distancia de tu ubicación. No obstante, en general el envío cuesta $10.000 a todo Bogotá.",
     "¿tienen devoluciones?|¿puedo devolver un producto?|¿cómo funciona la devolución?": "Sí, puedes devolver productos dentro de los 5 días.",
-    "¿cuáles son los métodos de pago?|¿cómo puedo pagar?|formas de pago disponibles": "Aceptamos tarjetas, transferencias y pagos contraentrega.",
-    "¿tienen cuadernos o libretas kawaii?": "- Cuaderno kawaii de tapa dura: $9.000\n- Libreta mini con forma de gatito: $6.000\n- Planificador semanal kawaii: $7.000",
-    "¿qué bolígrafos o lápices kawaii tienen?": "- Bolígrafo gel con diseño de helado: $3.500\n- Lápiz con pompón o diseño cute: $2.500\n- Marcador doble punta pastel (unidad): $2.800",
-    "¿qué accesorios de oficina kawaii ofrecen?": "- Estuche con diseño de animalitos: $15.000\n- Cartuchera transparente con glitter: $13.000\n- Sacapuntas con diseño de oso: $2.000\n- Tijeras pequeñas con orejitas: $5.000\n- Porta notas acrílico con diseño: $6.500",
-    "¿tienen stickers o washi tape kawaii?": "- Pegatinas decorativas (hoja): $2.000\n- Stickers 3D kawaii (set): $4.500\n- Washi tape decorativo (rollo): $3.000",
-    "¿cuáles son los productos más vendidos?": "- Cuaderno kawaii de tapa dura: $9.000\n- Estuche con diseño de animalitos: $15.000\n- Bolígrafo gel con diseño de helado: $3.500\n- Stickers 3D kawaii (set): $4.500\n- Planificador semanal kawaii: $7.000",
-    "¿tienen agendas kawaii?": "- Planificador mensual kawaii: $8.000\n- Agenda 2025 con diseño de gatitos: $10.000\n- Agenda con separadores y stickers: $9.500",
-    "¿tienen planificadores kawaii?": "- Planificador semanal kawaii: $7.000\n- Planificador diario con diseño de unicornio: $6.500\n- Planificador de bolsillo con ilustraciones: $5.500",
-    "gracias": "Un placer atenderte, no dudes en escribirnos para resolver tus dudas. También contamos con whatsapp y formulario de contácto.",
-    "¿Deseas terminar la conversación?": "Un placer atenderte, no dudes en escribirnos para resolver tus dudas. También contamos con whatsapp y formulario de contácto."
+    "¿cuáles son los métodos de pago?|¿cómo puedo pagar?|formas de pago disponibles": "Aceptamos tarjetas, transferencias, Nequi, Daviplata y pagos contraentrega.",
+    "¿tienen agendas kawaii?|¿qué tipos de agendas tienen?": "- Agenda Hologramada Kuromi: $22.000\n- Agenda Stitch imantada: $20.000\n- Agenda Hello Kitty imantada: $20.000\n- Agenda argollada Cinnamoroll: $13.000",
+    "¿qué mugs kawaii tienen?|¿tienen tazas personalizadas?": "- Mug Kuromi con cuchara: $30.000\n- Mug Stitch: $26.000\n- Mug Capybara: $30.000\n- Mug Totoro con cuchara: $30.000\n- Mug Mickey: $30.000",
+    "¿tienen productos de maquillaje kawaii?|¿qué productos de belleza ofrecen?": "- Paleta Kevin y Coco 18 tonos: $21.000\n- Set de brochas profesionales: $20.000\n- Serum Bioaqua Centella: $8.000\n- Paleta Barbie 82 tonos: $52.000",
+    "¿tienen bolsos kawaii?|¿qué mochilas tienen?": "- Bolso Siliconado Zorro: $20.000\n- Mochila Peluche Ositos Cariñositos: $40.000\n- Cartera Cinnamoroll: $36.000\n- Bolso Stitch: $39.000",
+    "¿tienen juguetes kawaii?|¿qué peluches tienen?": "- Peluche Angela - Stitch: $25.000\n- Tiburón Robotizado: $44.000\n- Dragón Robotizado: $24.000\n- Panda Robotizado: $25.000",
+    "¿tienen productos de papelería kawaii?|¿qué cuadernos tienen?": "- Set 80 marcadores Offiesco: $130.000\n- Set 12 marcadores doble punta: $22.000\n- Colores Prismacolor x18: $20.000",
+    "¿tienen monederos kawaii?|¿qué billeteras tienen?": "- Monedero Lentejuelas: $10.000\n- Billetera Kuromi: $26.000\n- Billetera Death Note: $26.000\n- Monedero redondo Capybara: $14.000",
+    "¿tienen lámparas kawaii?|¿qué lámparas decorativas tienen?": "- Lámpara astronauta sobre luna: $30.000\n- Lámpara conejo: $25.000\n- Lámpara capybara alien: $35.000",
+    "¿tienen cartucheras kawaii?|¿qué estuches tienen?": "- Cartuchera Capybara: $25.000\n- Cartuchera Gato: $16.000\n- Cartuchera Peluche Sanrio: $15.000",
+    "¿tienen termos kawaii?|¿qué termos tienen?": "- Termos Kawaii (Rosa, Morado, Negro, Verde): $18.000 cada uno",
+    "¿cuáles son los productos más vendidos?": "- Mug Kuromi con cuchara: $30.000\n- Agenda Hologramada Kuromi: $22.000\n- Billetera Kuromi: $26.000\n- Set de brochas profesionales: $20.000",
+   
+       # Productos específicos
+    "¿tienen el Mug Kuromi con cuchara?|¿el Mug Kuromi tiene tapa?": "Sí, el Mug Kuromi con cuchara ($30.000) incluye tapa de madera y cuchara metálica. ¡Es perfecto para bebidas calientes! 🍵✨",
+    "¿qué diseños tienen de la Agenda Hologramada Kuromi?|¿la Agenda Kuromi es argollada?": "La Agenda Hologramada Kuromi ($22.000) tiene efecto brillante, es argollada e incluye 4 separadores. Disponible en diseños: Lenticular 1 y 2.",
+    "¿el Bolso Stitch es de peluche?|¿qué tamaño tiene el Bolso Stitch?": "¡Sí! El Bolso Stitch ($39.000) es de peluche, mide 30x32 cm y tiene correa para cargarlo de medio lado. 🎒💙",
+    "¿el Dragón Robotizado hace sonidos?|¿qué colores tiene el Dragón Robotizado?": "Sí, el Dragón Robotizado ($24.000) emite sonidos, se desplaza y luce en verde o naranja. ¡Incluye baterías! 🐉🔊",
+
+    # Inventario y disponibilidad
+    "¿tienen en stock el Mug Stitch?|¿el Mug Stitch está disponible?": "Actualmente tenemos 3 unidades del Mug Stitch ($26.000) en inventario. ¡Pide el tuyo antes de que se agote! ☕",
+    "¿cuándo llegan más Agendas Cinnamoroll?|¿la Agenda Cinnamoroll está agotada?": "La Agenda argollada Cinnamoroll ($13.000) está en reposición. ¡Puedes preordenarla! Escribe tu email para avisarte. ✨",
+
+    # Personalización y opciones
+    "¿los Termos Kawaii son para bebidas frías?|¿qué capacidad tienen los Termos Kawaii?": "Los Termos Kawaii ($18.000) son ideales para bebidas frías. Vienen en 4 diseños: rosa, morado, negro y verde. 🧊",
+    "¿las Pestañas Engol son reutilizables?|¿qué medidas tienen las pestañas 3D?": "Las Pestañas Efecto 3D Engol ($10.000) son reutilizables. Medidas disponibles: 3D-02, 3D-04, 3D-17 y 3D-24. 👁️✨",
+
+    # Envíos y logística
+    "¿hacen envíos el mismo día?|¿cuánto tarda el envío?": "Envíos express en 24 hrs (solo Bogotá). Para otras ciudades: 2-3 días hábiles. 📦⏳",
+    "¿puedo recoger en tienda?|¿tienen local físico?": "Sí, puedes recoger en nuestro local en Bogotá (Calle Kawaii #123). Horario: L-V de 9 AM a 6 PM. 🏪📍",
+
+    # Promociones y descuentos
+    "¿tienen descuento por compra mayorista?|¿hacen precios por cantidad?": "¡Sí! Descuentos del 10% en compras mayores a $200.000. Contáctanos por WhatsApp para pedidos especiales. 💰📲",
+
+    # Garantías y cuidados
+    "¿el Serum Bioaqua es para piel sensible?|¿el Serum Centella sirve para acne?": "El Serum Bioaqua Centella ($8.000) es hipoalergénico, ideal para pieles sensibles y ayuda a reducir el acné. 🌿💧",
+    "¿las Brochas profesionales son sintéticas?|¿qué incluye el set de brochas?": "El Set de Brochas ($20.000) incluye 9 piezas sintéticas para maquillaje profesional. ¡Incluye estuche! 🖌️🎨",
+
+    # Preguntas técnicas
+    "¿la Licuadora Portátil es recargable?|¿qué incluye la Licuadora Portátil?": "La Licuadora Portátil ($26.000) es recargable e incluye vaso de vidrio y cuchillas de acero inoxidable. 🥤🔋",
+    "¿el Peluche Angela es lavable?|¿qué material es el Peluche Stitch?": "El Peluche Angela ($25.000) es de felpa suave y se puede lavar a mano. ¡No usar secadora! 🧼🧸",
+
+    # Nuevas preguntas y respuestas
+    "¿el Mug Capybara trae tapa incluida?|¿qué incluye el Mug Capybara?": "¡Así es! El Mug Capybara ($30.000) incluye tapa de porcelana y cuchara de acero. Perfecto para mantener tus bebidas calientes. 🦝☕",
+    
+    "¿la Lámpara Astronauta tiene pilas?|¿cómo funciona la Lámpara Astronauta?": "La Lámpara Astronauta ($30.000) funciona con baterías recargables (incluidas) y tiene luz LED ajustable. ¡Ideal para noches de lectura! 👨‍🚀🌙",
+    
+    "¿qué diferencia hay entre las agendas imantadas y argolladas?|¿cuál agenda recomiendan?": """
+    Diferencias clave:
+    - Agendas Imantadas ($20.000): Cierre seguro con imán, hojas amarillas
+    - Agendas Argolladas ($13.000): Más hojas (80), diseño cuadriculado
+    ¡Recomendamos la imantada para llevar siempre contigo! 📓💫
+    """,
+    
+    "¿puedo personalizar un producto?|¿hacen productos a pedido?": "Actualmente no ofrecemos personalización, pero tenemos más de 50 diseños kawaii para elegir. ¡Seguro encuentras tu favorito! ✨🎨",
+    
+    "¿el Peluche Tiburón canta Baby Shark?|¿qué canciones tiene el Tiburón Robotizado?": "¡Exacto! El Tiburón Robotizado ($44.000) canta Baby Shark y se mueve al ritmo. ¡Diversión garantizada para los pequeños! 🦈🎶",
+    
+    "¿las Brochas profesionales son para maquillaje base?|¿qué tipos de brochas incluye el set?": "El Set Profesional ($20.000) incluye:\n- 2 brochas para base\n- 3 para sombras\n- 1 para rubor\n- 1 para contorno\n- 2 para difuminar. ¡Kit completo! 💄👩‍🎨",
+    
+    "¿el Monedero de Lentejuelas es resistente?|¿de qué material está hecho?": "El Monedero Lentejuelas ($10.000) tiene base de tela resistente con lentejuelas cosidas. ¡Brillante y duradero! ✨👛",
+    
+    "¿qué tan grande es la Mochila Ositos Cariñositos?|¿caben libros en la mochila?": "Mide 30x32 cm. ¡Sí! Tiene capacidad para:\n- 2-3 libros medianos\n- Estuche\n- Lonchera. Perfecta para el cole. 🎒📚",
+    
+    "¿el Termo Kawaii mantiene el frío?|por cuántas horas?": "¡Claro! Nuestros Termos ($18.000) mantienen bebidas frías por 12 horas y calientes por 6 horas. ¡Compañero ideal! ❄️⏱️",
+    
+    "¿las Pestañas punto a punto son cómodas?|¿se sienten pesadas?": "Las Pestañas punto a punto ($10.000) son ultra ligeras y flexibles. ¡No sentirás que las llevas puestas! 👁️💕",
+    
+    "¿la Cartuchera Sanrio tiene varios compartimentos?|cuántos bolsillos tiene": "La Cartuchera Peluche Sanrio ($15.000) tiene:\n- 1 compartimento principal\n- 2 bolsillos laterales\n- 1 red para lápices. ¡Super práctica! ✏️🦊",
+    
+    "¿el Serum de Vitamina C huele bien?|¿tiene fragancia?": "El Serum Vitamina C ($8.000) tiene un suave aroma a cítricos naturales (sin perfumes artificiales). ¡Refrescante! 🍊🌿",
+    
+    "¿qué incluye el Set de Marcadores Offiesco?|vienen con punta fina y gruesa": "El Set de 80 marcadores ($130.000) incluye:\n- 40 colores doble punta (fina/gruesa)\n- 20 neón\n- 20 pasteles. ¡Para artistas! 🎨🖍️",
+    
+    "¿la Billetera Kuromi tiene espacio para tarjetas?|cuántas tarjetas caben": "La Billetera Kuromi ($26.000) tiene:\n- 8 ranuras para tarjetas\n- Compartimento para billetes\n- Monedero. ¡Todo en uno! 💳👛",
+    
+    "¿el Peluche Robotizado Elefante camina solo?|¿necesita control remoto": "El Elefante Robotizado ($25.000) se mueve automáticamente al encenderlo (no necesita control). ¡Solo ponle pilas! 🐘🔋",
+    
+    "¿las Lámparas Conejo tienen diferentes intensidades de luz?|¿se puede regular": "¡Sí! La Lámpara Conejo ($25.000) tiene 3 niveles de intensidad (suave/medio/fuerte). ¡Ambiente perfecto! 🐰💡",
+    
+    "¿el Bolso Siliconado Mario Bros es para niños?|¿qué edad recomiendan": "Es ideal para:\n- Niños desde 6 años\n- Jóvenes\n- Adultos fanáticos. Tamaño universal (25x20cm). 🎮👦",
+    
+    "¿la Agenda Harry Potter trae stickers?|qué incluye adicional": "La Agenda HP ($20.000) incluye:\n- 5 stickers temáticos\n- Marcador de páginas\n- Hoja de contactos. ¡Magia organizada! ⚡📖",
+    
+    "¿el Set de Brochas trae instructivo?|¿cómo saber cuál es cuál": "Incluye:\n- Guía impresa con usos de cada brocha\n- Numeración en los mangos\n- Estuche organizador. ¡Aprende fácil! 🖌️📝",
+    
+    "¿puedo lavar la Cartuchera Capybara en lavadora?|cómo limpiarla": "Recomendamos:\n- Limpieza manual con paño húmedo\n- Secar al aire\n- No usar lavadora (para mantener el peluche suave). 🦦🧼",
+    
+    # Despedidas
+    "gracias|muchas gracias": "¡Gracias a ti! 💖 Si necesitas algo más, aquí estaremos. Un placer atenderte, no dudes en escribirnos para resolver tus dudas. También contamos con whatsapp y formulario de contacto.",
+    "adiós|hasta luego|chao": "¡Que tengas un día adorable! 🌸 No olvides visitar nuestra web para más novedades. ¡Hasta pronto! 🛍️",
+    "¿Deseas terminar la conversación?": "Un placer atenderte, no dudes en escribirnos para resolver tus dudas. También contamos con whatsapp y formulario de contacto.",
 }
 
 # Variables globales
