@@ -117,6 +117,288 @@ faq_raw = {
     "¿el Set de Brochas trae instructivo?|¿cómo saber cuál es cuál": "Incluye:\n- Guía impresa con usos de cada brocha\n- Numeración en los mangos\n- Estuche organizador. ¡Aprende fácil! 🖌️📝",
     
     "¿puedo lavar la Cartuchera Capybara en lavadora?|cómo limpiarla": "Recomendamos:\n- Limpieza manual con paño húmedo\n- Secar al aire\n- No usar lavadora (para mantener el peluche suave). 🦦🧼",
+    # CONSULTAS GENERALES POR CATEGORÍA
+    "maquillaje|productos de belleza|cosméticos": """
+    💄 *Línea completa de maquillaje kawaii*:
+    - Paletas de sombras ($10.000 a $52.000)
+    - Sets de brochas profesionales ($20.000)
+    - Serums faciales ($8.000)
+    - Labiales y delineadores
+    ¡Todos hipoalergénicos y testeados! ✨
+    """,
+    
+    "agendas|planificadores|organizadores": """
+    📅 *Agendas para todos los gustos*:
+    - Imantadas ($20.000)
+    - Argolladas ($13.000-$22.000)
+    - Holográficas ($22.000)
+    - Con diseños: Stitch, Kuromi, Hello Kitty
+    ¡Incluyen separadores y stickers! 🎀
+    """,
+    
+    "bolsos|mochilas|carteras": """
+    👜 *Bolsos kawaii en variedad de estilos*:
+    - Siliconados ($20.000-$30.000)
+    - De peluche ($35.000-$40.000)
+    - Tamaños: Mediolado, bandolera, mochila
+    Materiales: Peluche, silicona, cuerina
+    """,
+    
+    "peluches|juguetes|muñecos": """
+    🧸 *Peluches interactivos y robotizados*:
+    - Robotizados ($25.000-$44.000): caminan y hacen sonidos
+    - Peluches clásicos ($20.000-$25.000)
+    - Personajes: Stitch, Capybara, Pokémon
+    ¡Incluyen baterías o son lavables! 🔋
+    """,
+    
+    "mugs|tazas|vasos": """
+    ☕ *Mugs kawaii con accesorios*:
+    - Con cuchara y tapa ($26.000-$32.000)
+    - Diseños: Stitch, Kuromi, animales
+    - Material: Porcelana de alta calidad
+    ¡Perfectos para regalo! 🎁
+    """,
+    
+    # INFORMACIÓN RESUMEN DE CATEGORÍAS
+    "¿qué productos tienen de papelería?|cuadernos": """
+    ✏️ *Papelería kawaii*:
+    - Sets de marcadores ($7.500 a $130.000)
+    - Libretas ($15.000-$22.000)
+    - Resaltadores pasteles
+    - Stickers y washi tape (próximamente)
+    """,
+    
+    "¿qué hay en accesorios?|productos varios": """
+    🎀 *Accesorios variados*:
+    - Lámparas decorativas ($25.000-$35.000)
+    - Cartucheras ($15.000-$25.000)
+    - Joyeros ($20.000)
+    - Monederos ($5.000-$14.000)
+    """,
+    
+    "termos|botellas|portabebidas": """
+    🧋 *Termos y portabebidas*:
+    - Para bebidas frías ($18.000)
+    - 4 diseños kawaii
+    - Incluye pajilla reutilizable
+    ¡Mantiene temperatura por 12 horas! ⏱️
+    """,
+    
+    # DETALLES ESPECÍFICOS POR CATEGORÍA
+    "¿qué paletas de sombras tienen?|sombras": """
+    🌈 *Paletas de sombras disponibles*:
+    1. Kevin & Coco 18 tonos - $21.000
+    2. Barbie 82 tonos - $52.000
+    3. Lacalterra nude - $23.000
+    4. Mini paleta x9 - $14.000
+    (Todas incluyen espejo) 💝
+    """,
+    
+    "¿qué tipos de billeteras hay?|monederos": """
+    💳 *Billeteras y monederos*:
+    - Siliconadas ($26.000): Kuromi, Stitch
+    - De peluche ($10.000-$14.000)
+    - Con diseño de personajes
+    ¡Algunas incluyen tarjetero! 👛
+    """,
+    
+    "dime sobre los sets de brochas|herramientas maquillaje": """
+    🖌️ *Sets de brochas profesionales*:
+    - Básico (9 piezas) - $20.000
+    - Viajero (5 piezas) - $15.000
+    - Incluyen:
+      • Brochas para base/sombra
+      • Difuminadores
+      • Estuche protector
+    """,
+    
+    "¿qué productos tienen para skincare?|cuidado facial": """
+    🧴 *Skincare kawaii*:
+    - Serums ($8.000): Vitamina C, Ácido Hialurónico
+    - Limpiadores faciales ($10.000-$20.000)
+    - Contorno de ojos ($10.000)
+    ¡Hipoalergénicos y sin parabenos! 🌿
+    """,
+    
+    # CONSULTAS SOBRE MATERIALES/CARACTERÍSTICAS
+    "¿de qué material son los bolsos?|materiales": """
+    🧵 *Materiales principales*:
+    - Peluche: Suave y lavable
+    - Silicona: Resistente al agua
+    - Cuerina: Liviana y duradera
+    - Tela: Con diseños estampados
+    """,
+    
+    "¿los peluches son lavables?|cuidado de peluches": """
+    🧼 *Instrucciones de lavado*:
+    - Peluches clásicos: Lavado a mano con agua fría
+    - Robotizados: Solo limpieza superficial
+    - Secar al aire libre
+    ¡No usar secadora o blanqueadores! ⚠️
+    """,
+    
+    "¿las agendas traen hojas cuadriculadas o rayadas?|hojas": """
+    📝 *Tipos de hojas*:
+    - Cuadriculadas: Agendas Stitch/Cinnamoroll
+    - Rayadas: Hello Kitty/Harry Potter
+    - Mixtas: Holográficas
+    ¡Todas incluyen separadores temáticos! ✨
+    """,
+    
+    # PROMOCIONES POR CATEGORÍA
+    "¿tienen promociones en maquillaje?|ofertas belleza": """
+    💖 *Ofertas en maquillaje*:
+    - 2 paletas por $35.000 (antes $42.000)
+    - Serum + contorno de ojos: $15.000
+    - ¡Solo hasta agotar stock!
+    """,
+    
+    "¿hacen descuentos en bolsos?|promos accesorios": """
+    🛍️ *Promociones activas*:
+    - 2 bolsos siliconados por $45.000
+    - Mochila + cartuchera: $50.000
+    Consulta nuestro Instagram @KawaiiShopCO 🎀
+    """,
+    
+    # PREGUNTAS ABIERTAS
+    "recomiéndame algo para regalar|ideas de regalo": """
+    🎁 *Top regalos kawaii*:
+    1. Mug + agenda ($50.000)
+    2. Peluche + bolso ($60.000)
+    3. Set maquillaje completo ($80.000)
+    ¡Te ayudamos a elegir! 💌
+    """,
+    
+    "¿qué me recomiendan para empezar en maquillaje?|básicos": """
+    💫 *Kit básico ideal*:
+    - Paleta nude ($21.000)
+    - Set brochas ($20.000)
+    - Serum hidratante ($8.000)
+    Total: $49.000 (¡Ahorras $5.000!)
+    """,
+    "¿qué sets de marcadores tienen?|marcadores": """
+    ✏️ *Sets profesionales disponibles*:
+    - Set 80 marcadores Offiesco doble punta: $130.000
+    - Set 12 marcadores Offiesco doble punta biselados: $22.000
+    - Set 6 marcadores Jumbo Offiesco: $13.000
+    - Set 6 resaltadores pasteles delgados Offiesco: $7.500
+    """,
+
+    "¿los marcadores son doble punta?|tipo de punta": """
+    🖍️ *Características*:
+    - Los sets de 80 y 12 unidades tienen doble punta (fina/biselada)
+    - Los Jumbo son de punta gruesa única
+    - Resaltadores tienen punta delgada
+    """,
+
+    "¿los marcadores son permanentes?|tinta": """
+    🔍 *Sobre la tinta*:
+    - Todos los marcadores Offiesco son a base de agua
+    - No permanentes (ideales para resaltar sin dañar libros)
+    - Los resaltadores pasteles son borrables
+    """,
+
+    # COLORES PRISMACOLOR (del Excel)
+    "¿venden colores Prismacolor?|lápices profesionales": """
+    🎨 *Opción profesional*:
+    - Colores Prismacolor Unipunta x18: $20.000
+    - Colores doble punta Kiut: $22.000
+    (Ambos sets son de alta pigmentación)
+    """,
+
+    # RESALTADORES (del Excel)
+    "¿tienen resaltadores pasteles?|resaltadores": """
+    🌸 *Resaltadores suaves*:
+    - Set x6 resaltadores pasteles delgados Offiesco: $7.500
+    - Colores: rosa, azul, amarillo, verde, lila y melocotón
+    """,
+
+    # AGENDAS (solo las que están en el Excel)
+    "¿qué tipos de agendas tienen?|agendas escolares": """
+    📚 *Agendas disponibles*:
+    - Agenda Stitch imantada: $20.000
+    - Agenda Hello Kitty imantada: $20.000
+    - Agenda argollada Stitch: $13.000
+    - Agenda argollada Cinnamoroll: $13.000
+    - Agenda Hologramada Kuromi: $22.000
+    """,
+
+    "¿las agendas traen separadores?|organización": """
+    🔖 *Incluyen*:
+    - Todas las argolladas: 4-6 separadores
+    - Hologramada Kuromi: 4 separadores a color
+    - Imantadas: 1 separador básico
+    """,
+
+    # PLANEADORES (del Excel)
+    "¿venden planeadores?|organizadores semanales": """
+    📅 *Planeadores tipo kawaii*:
+    - Planeadores Kuromi (Diseño Fucsia/Lila/Rosado): $12.000 c/u
+    - Planeador Kawaii-1: $20.000
+    - Planeador Kawaii-2: $20.000
+    (Todos con hojas semanales imantadas)
+    """,
+
+    # CARTUCHERAS (del Excel)
+    "¿qué cartucheras tienen?|estuches": """
+    🏷️ *Cartucheras disponibles*:
+    - Cartuchera Capybara (peluche): $25.000
+    - Cartuchera Gato (4 diseños): $16.000
+    - Cartuchera Sanrio (My Melody): $15.000
+    - Cosmetiquera vinilo + peluche: $17.000
+    """,
+
+    # MATERIALES
+    "¿de qué material son las cartucheras?|materiales": """
+    🧵 *Según modelo*:
+    - Peluche: Capybara/Sanrio (lavables)
+    - Sintético: Cartuchera Gato (resistente)
+    - Vinilo: Cosmetiquera (transparente)
+    """,
+
+    # TAMAÑOS
+    "¿qué tamaño tienen las cartucheras?|medidas": """
+    📏 *Medidas aproximadas*:
+    - Capybara: 21x12 cm
+    - Gato: 17x10 cm
+    - Sanrio: 10x16 cm
+    - Cosmetiquera: 20x10 cm
+    """,
+
+    # REGALOS
+    "¿qué set de papelería recomiendan para regalo?|kits": """
+    🎁 *Combos perfectos*:
+    1. Agenda Hologramada + Set 12 marcadores: $44.000
+    2. Planeador Kuromi + 6 resaltadores: $19.500
+    3. Cartuchera Gato + Colores Prismacolor: $36.000
+    """,
+
+    # STOCK
+    "¿tienen el Set de 80 marcadores en stock?|disponibilidad": """
+    📦 *Inventario actual*:
+    - Set 80 marcadores: Disponible (últimas 2 unidades)
+    - Tiempo de reposición: 15 días hábiles
+    """,
+
+    # NOVEDADES (solo productos existentes)
+    "¿tienen productos nuevos en papelería?|lanzamientos": """
+    🆕 *Recientemente agregados*:
+    - Set 6 resaltadores pasteles Offiesco ($7.500)
+    - Colores doble punta Kiut ($22.000)
+    - Agenda Hologramada Kuromi versión 2 ($22.000)
+    """,
+
+    # COMPARATIVOS
+    "¿qué diferencia hay entre los colores Prismacolor y Kiut?|comparación": """
+    🔍 *Diferencias clave*:
+    | Característica | Prismacolor | Kiut |
+    |---------------|------------|------|
+    | Tipo | Unipunta | Doble punta |
+    | Cantidad | 18 | 12 |
+    | Precio | $20.000 | $22.000 |
+    | Ideal para | Detalles | Bocetos rápidos |
+    """,
     
     # Despedidas
     "gracias|muchas gracias": "¡Gracias a ti! 💖 Si necesitas algo más, aquí estaremos. Un placer atenderte, no dudes en escribirnos para resolver tus dudas. También contamos con whatsapp y formulario de contacto.",
@@ -190,7 +472,7 @@ def responder_pregunta(pregunta: Pregunta):
     texto = pregunta.texto.strip().lower()
     if len(texto) < 4 or texto in ["hola", "hi", "saludos", "hey"]:
         return {
-            "respuesta": "¡Hola! ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre nuestros productos kawaii, envíos, métodos de pago o devoluciones."
+            "respuesta": "¡Hola! ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre nuestros productos kawaii, envíos, métodos de pago o devoluciones. Estoy para ayudarte conpreguntas frecuentes, para dudas más especificas por favor contáctanos por whatsapp, o el formulario de contácto."
         }
 
     pregunta_norm = normalizar(pregunta.texto)
