@@ -7,6 +7,7 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 import os
 from collections import defaultdict
+import re
 
 app = FastAPI()
 
@@ -26,7 +27,7 @@ def normalizar(texto: str) -> str:
                    if unicodedata.category(c) != 'Mn')
     return texto
 
-# Base de FAQs
+# Base de FAQs completa con todas las preguntas
 faq_raw = {
     # Envíos
     "¿cuánto cuesta el envío?|¿cuál es el valor del envío?|precio del envío|envíos|costos de envío|información de envíos": "En principio, el valor del envío depende de la distancia de tu ubicación. No obstante, en general el envío cuesta $10.000 a todo Bogotá.",
@@ -442,6 +443,7 @@ faq_raw = {
     "¿Deseas terminar la conversación?|terminar conversación": "Un placer atenderte, no dudes en escribirnos para resolver tus dudas. También contamos con whatsapp y formulario de contacto.",
 }
 
+
 # Variables globales
 modelo = None
 index = None
@@ -449,10 +451,28 @@ preguntas_originales = []
 respuestas = []
 grupos_faq = []
 palabras_clave_faq = defaultdict(list)
+indice_invertido = defaultdict(list)  # Nuevo índice invertido para búsquedas más precisas
+
+# Función para extraer palabras clave principales
+def extraer_palabras_clave(texto):
+    # Eliminar signos de puntuación
+    texto = re.sub(r'[^\w\s]', '', texto)
+    palabras = texto.lower().split()
+    
+    # Palabras comunes a ignorar
+    stopwords = {'que', 'como', 'cual', 'cuanto', 'tienen', 'tiene', 'hay', 
+                'para', 'por', 'con', 'los', 'las', 'del', 'de', 'la', 'el', 
+                'en', 'un', 'una', 'y', 'o', 'es', 'son', 'me', 'mi', 'tu', 
+                'su', 'nos', 'se', 'te', 'le', 'les', 'nosotros', 'ustedes'}
+    
+    # Filtrar palabras relevantes
+    palabras_clave = [palabra for palabra in palabras if palabra not in stopwords and len(palabra) > 3]
+    
+    return palabras_clave[:3]  # Devolver hasta 3 palabras clave principales
 
 # Inicializar modelo y FAISS
 def inicializar_modelo():
-    global modelo, index, preguntas_originales, respuestas, grupos_faq, palabras_clave_faq
+    global modelo, index, preguntas_originales, respuestas, grupos_faq, palabras_clave_faq, indice_invertido
 
     if modelo is not None and index is not None:
         return
@@ -461,28 +481,23 @@ def inicializar_modelo():
     respuestas.clear()
     grupos_faq.clear()
     palabras_clave_faq.clear()
+    indice_invertido.clear()
 
-    # Palabras clave mejoradas
-    palabras_clave_categorias = {
-        "envío": ["envío", "envio", "precio", "cuesta", "valor", "costo", "envios"],
-        "devoluciones": ["devolver", "devolución", "cambio", "retorno", "devolverlo"],
-        "pagos": ["pago", "métodos", "tarjeta", "transferencia", "contraentrega", "pagar"],
-        "kawaii": ["kawaii", "kawali", "cawai", "lindo", "cute", "tierno", "adorable"],
-        "productos": ["cuaderno", "libreta", "bolígrafo", "lápiz", "accesorio", 
-                     "sticker", "washi tape", "agenda", "planificador", "producto"],
-        "terminar": ["gracias", "chao", "adiós", "adios", "bye"]
-    }
-
+    # Procesar todas las preguntas del FAQ
     for grupo, respuesta in faq_raw.items():
         grupo_splitted = grupo.split("|")
         for pregunta in grupo_splitted:
-            preguntas.append(normalizar(pregunta))
+            pregunta_norm = normalizar(pregunta)
+            preguntas.append(pregunta_norm)
             respuestas.append(respuesta)
             grupos_faq.append(grupo_splitted[0])
             
-            for categoria, palabras in palabras_clave_categorias.items():
-                if any(palabra in normalizar(pregunta) for palabra in palabras):
-                    palabras_clave_faq[categoria].append(grupo_splitted[0])
+            # Extraer palabras clave de cada pregunta para búsquedas futuras
+            palabras_clave = extraer_palabras_clave(pregunta)
+            for palabra in palabras_clave:
+                palabras_clave_faq[palabra].append(grupo_splitted[0])
+                # Construir índice invertido
+                indice_invertido[palabra].append(len(preguntas)-1)  # Guardar índice de la pregunta
 
     preguntas_originales[:] = preguntas
 
@@ -508,7 +523,7 @@ def responder_pregunta(pregunta: Pregunta):
     texto = pregunta.texto.strip().lower()
     if len(texto) < 4 or texto in ["hola", "hi", "saludos", "hey"]:
         return {
-            "respuesta": "¡Hola! ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre nuestros productos kawaii, envíos, métodos de pago o devoluciones. Estoy para ayudarte conpreguntas frecuentes, para dudas más especificas por favor contáctanos por whatsapp, o el formulario de contácto."
+            "respuesta": "¡Hola! ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre nuestros productos kawaii, envíos, métodos de pago o devoluciones. Estoy para ayudarte con preguntas frecuentes, para dudas más específicas por favor contáctanos por whatsapp o el formulario de contacto."
         }
 
     pregunta_norm = normalizar(pregunta.texto)
@@ -521,29 +536,61 @@ def responder_pregunta(pregunta: Pregunta):
     if mejor_distancia < 0.7:
         return {"respuesta": respuestas[mejor_indice]}
     else:
-        # Palabras clave mejoradas
-        palabras_clave = {
-            "envío": ["envío", "envio", "precio", "cuesta", "valor", "costo", "envios"],
-            "devoluciones": ["devolver", "devolución", "cambio", "retorno", "devolverlo"],
-            "pagos": ["pago", "métodos", "tarjeta", "transferencia", "contraentrega", "pagar"],
-            "kawaii": ["kawaii", "kawali", "cawai", "lindo", "cute", "tierno", "adorable"],
-            "productos": ["cuaderno", "libreta", "bolígrafo", "lápiz", "accesorio", 
-                         "sticker", "washi tape", "agenda", "planificador", "producto"],
-             "terminar": ["gracias", "chao","adiós", "adios", "bye"]
-        }
-
+        # Extraer palabras clave de la pregunta del usuario
+        palabras_clave_usuario = extraer_palabras_clave(pregunta.texto)
+        
         sugerencias = []
-        for categoria, palabras in palabras_clave.items():
-            if any(palabra in pregunta_norm for palabra in palabras):
-                for i, pregunta_bd in enumerate(preguntas_originales):
-                    if any(palabra in pregunta_bd for palabra in palabras):
-                        tema = grupos_faq[i]
-                        if tema not in sugerencias:
-                            sugerencias.append(tema)
-                            if len(sugerencias) >= 3:
-                                break
-                if len(sugerencias) >= 3:
-                    break
+        temas_sugeridos = set()
+        
+        # Primera pasada: buscar coincidencias exactas en el índice invertido
+        indices_coincidentes = set()
+        for palabra in palabras_clave_usuario:
+            if palabra in indice_invertido:
+                for idx in indice_invertido[palabra]:
+                    indices_coincidentes.add(idx)
+        
+        # Ordenar por relevancia (cuántas palabras clave coinciden)
+        preguntas_coincidentes = []
+        for idx in indices_coincidentes:
+            count = 0
+            for palabra in palabras_clave_usuario:
+                if palabra in preguntas_originales[idx]:
+                    count += 1
+            preguntas_coincidentes.append((count, idx))
+        
+        # Ordenar por mayor coincidencia primero
+        preguntas_coincidentes.sort(reverse=True, key=lambda x: x[0])
+        
+        # Tomar las mejores 3 coincidencias
+        for count, idx in preguntas_coincidentes[:3]:
+            tema = grupos_faq[idx]
+            if tema not in temas_sugeridos:
+                temas_sugeridos.add(tema)
+                sugerencias.append(tema)
+        
+        # Si no encontramos suficientes sugerencias, buscar en categorías generales
+        if len(sugerencias) < 3:
+            categorias_generales = {
+                "envío": ["envío", "envio", "precio", "cuesta", "valor", "costo", "envios"],
+                "devoluciones": ["devolver", "devolución", "cambio", "retorno", "devolverlo"],
+                "pagos": ["pago", "métodos", "tarjeta", "transferencia", "contraentrega", "pagar"],
+                "kawaii": ["kawaii", "kawali", "cawai", "lindo", "cute", "tierno", "adorable"],
+                "productos": ["cuaderno", "libreta", "bolígrafo", "lápiz", "accesorio", 
+                             "sticker", "washi tape", "agenda", "planificador", "producto"]
+            }
+            
+            for categoria, palabras in categorias_generales.items():
+                if any(palabra in pregunta_norm for palabra in palabras):
+                    for i, pregunta_bd in enumerate(preguntas_originales):
+                        if any(palabra in pregunta_bd for palabra in palabras):
+                            tema = grupos_faq[i]
+                            if tema not in temas_sugeridos:
+                                temas_sugeridos.add(tema)
+                                sugerencias.append(tema)
+                                if len(sugerencias) >= 3:
+                                    break
+                    if len(sugerencias) >= 3:
+                        break
 
         if sugerencias:
             return {
@@ -554,8 +601,7 @@ def responder_pregunta(pregunta: Pregunta):
             sugerencias_generales = [
                 "¿Quieres saber sobre el precio de envío?",
                 "¿Necesitas información sobre cómo devolver un producto?",
-                "¿Buscas nuestros productos kawaii como cuadernos o accesorios?",
-                "¿Deseas terminar la conversacion?"
+                "¿Buscas nuestros productos kawaii como cuadernos o accesorios?"
             ]
             return {
                 "respuesta": "No pude entender tu pregunta. Aquí tienes algunas opciones:",
